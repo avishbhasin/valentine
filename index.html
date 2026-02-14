@@ -617,34 +617,29 @@
         function moveNoBtn() {
             noAttempts++;
 
-            // Calculate safe bounds within viewport
-            const btnRect = noBtn.getBoundingClientRect();
-            const vw = window.innerWidth;
-            const vh = window.innerHeight;
+            // On first move, switch to fixed positioning
+            if (noAttempts === 1) {
+                const rect = noBtn.getBoundingClientRect();
+                noBtn.style.position = 'fixed';
+                noBtn.style.left = rect.left + 'px';
+                noBtn.style.top = rect.top + 'px';
+                noBtn.style.margin = '0';
+                noBtn.style.zIndex = '50';
+            }
 
-            // Random position within safe area (keep button on screen)
-            const safeMargin = 20;
-            const maxX = vw - btnRect.width - safeMargin;
-            const maxY = vh - btnRect.height - safeMargin;
+            // Calculate random position within viewport (with safe margins)
+            const btnWidth = noBtn.offsetWidth;
+            const btnHeight = noBtn.offsetHeight;
+            const margin = 25;
+            const maxX = window.innerWidth - btnWidth - margin;
+            const maxY = window.innerHeight - btnHeight - margin;
 
-            // Get current original position (before any transform)
-            const originalRect = noBtn.offsetParent.getBoundingClientRect();
-            const originalX = originalRect.left + noBtn.offsetLeft + btnRect.width / 2;
-            const originalY = originalRect.top + noBtn.offsetTop + btnRect.height / 2;
+            const newX = margin + Math.random() * maxX;
+            const newY = margin + Math.random() * maxY;
 
-            // Random target within viewport
-            const targetX = safeMargin + Math.random() * maxX;
-            const targetY = safeMargin + Math.random() * maxY;
-
-            // Calculate needed translation
-            const translateX = targetX - originalX + btnRect.width / 2;
-            const translateY = targetY - originalY + btnRect.height / 2;
-
-            noBtn.style.transform = `translate(${translateX}px, ${translateY}px)`;
-            noBtn.style.position = 'fixed';
-            noBtn.style.left = '0';
-            noBtn.style.top = '0';
-            noBtn.style.transform = `translate(${targetX}px, ${targetY}px)`;
+            noBtn.style.left = newX + 'px';
+            noBtn.style.top = newY + 'px';
+            noBtn.style.transform = 'none';
             noBtn.textContent = funnyTexts[Math.min(noAttempts - 1, funnyTexts.length - 1)];
 
             // Make yes button grow slightly with each attempt
